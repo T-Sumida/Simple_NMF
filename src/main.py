@@ -38,7 +38,7 @@ if __name__ == "__main__":
     引数には、アルゴリズムと反復更新回数を渡しておく
     """
     dic,act = nmf.separate_euc_with_template(iter=200)
-    # dic,act = nmf.separate_is_without_template(iter=200)
+    # dic,act = nmf.separate_euc_without_template(iter=200)
     """
     結果表示
     """

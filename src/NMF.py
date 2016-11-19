@@ -12,7 +12,7 @@ class NMF():
 
     def setParam(self, k, row, column):
         """
-        :param k: 因子分回数
+        :param k
         :param row: 列
         :param column: 行
         :return:
@@ -43,7 +43,7 @@ class NMF():
         """
         一番最初に、このメソッドを呼んでください
         :param data: 分解するデータ
-        :param k: 因子分解数
+        :param k
         :return:
         """
         if len(np.shape(data)) == 1:
@@ -131,7 +131,7 @@ class NMF():
             bias = wh/wt
             bias[np.isnan(bias)] = 0
 
-            self.__activation = self.__activation * bias
+            self.__activation = self.__activation * np.sqrt(bias)
             counter += 1
 
         return self.__dictionary,self.__activation
@@ -246,7 +246,7 @@ class NMF():
 
             bias = wh/wt
             bias[np.isnan(bias)] = 0
-            self.__dictionary = self.__dictionary * bias
+            self.__dictionary = self.__dictionary * np.sqrt(bias)
 
 
 
