@@ -6,7 +6,6 @@ import numpy as np
 面倒くさいけれど、この２つをimportしないといけない
 """
 from NMF import NMF
-import Update
 
 
 """
@@ -22,8 +21,8 @@ if __name__ == "__main__":
     nmf = NMF()
 
     """
-    コンストラクタを作ったあとには、まずこれを呼んでください！！！！！
-    ここで、k,row,columnの設定をするので、これを呼ばないとsetDictionaryが動かなくなります！！！！！！
+    コンストラクタを作ったあとには、まずこれを呼んでください！
+    ここで、k,row,columnの設定をするので、これを呼ばないとsetDictionaryが動かなくなります！
     """
     nmf.setAnalyzData([[1,2,3,4],[2,3,4,5]],k=3)
 
@@ -41,12 +40,15 @@ if __name__ == "__main__":
     dic,act = nmf.separate_euc_with_template(iter=200)
     # dic,act = nmf.separate_is_without_template(iter=200)
     """
-    結果表示（dicは返す必要ない）
+    結果表示
     """
+    print "=========================== Dictionary ==========================="
     print dic
+    print "=========================== Activation ==========================="
     print act
 
     """
     ちゃんと分解できているかの確認
     """
+    print "=========================== Approx ==========================="
     print np.dot(dic,act)
