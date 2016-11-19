@@ -38,8 +38,8 @@ if __name__ == "__main__":
     NMF開始
     引数には、アルゴリズムと反復更新回数を渡しておく
     """
-    dic,act = nmf.start(algf=Update.i_s,iter=200000)
-
+    dic,act = nmf.separate_euc_with_template(iter=200)
+    # dic,act = nmf.separate_is_without_template(iter=200)
     """
     結果表示（dicは返す必要ない）
     """

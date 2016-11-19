@@ -54,15 +54,203 @@ class NMF():
             self.__data = data
             self.setParam(k, np.shape(data)[0], np.shape(data)[1])
 
-    def start(self, algf=Update.euc,iter=10):
+
+    def separate_euc_with_template(self,iter=200):
         """
-        因子分解を開始する
-        :param algf: Updateファイルの中にあるどのアルゴリズムかを選ぶ
-        :param iter: 反復更新回数
-        :return: 更新後の辞書行列と励起行列
+        テンプレートありのEUC仕様の分離処理を行う
+        :param iter:
+        :return:
         """
-        self.__data,self.__activation = algf(self.__data,self.__dictionary,self.__activation,iter)
+        counter = 0
 
-        return self.__dictionary, self.__activation
+        while counter < iter:
+            approx = np.dot(self.__dictionary , self.__activation)
+
+            wh = np.dot(np.transpose(self.__dictionary) , self.__data)
+            wt = np.dot(np.transpose(self.__dictionary) , approx)
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+
+            self.__activation = self.__activation * bias
+            counter += 1
+        return self.__dictionary,self.__activation
 
 
+    def separate_kl_with_template(self,iter=200):
+        """
+        テンプレートありのKL仕様の分離処理を行う
+        :param iter:
+        :return:
+        """
+        counter = 0
+        while counter < iter:
+            approx = np.dot(self.__dictionary , self.__activation)
+
+            w = self.__data/approx
+            w[np.isnan(w)] = 0
+            wh = np.dot(np.transpose(self.__dictionary),w)
+
+            wt = np.ones([1, self.__k], np.float32)
+            wt[:] = sum(self.__dictionary[:,:])
+            wt = np.transpose(wt)
+
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+
+            self.__activation = self.__activation * bias
+            counter += 1
+        return self.__dictionary,self.__activation
+
+
+
+    def separate_is_with_template(self,iter=200):
+        """
+        テンプレートありのIS仕様の分離処理を行う
+        :param iter:
+        :return:
+        """
+        counter = 0
+
+        while counter < iter:
+            approx = np.dot(self.__dictionary , self.__activation)
+            wt = np.ones([1, self.__k], np.float32)
+
+            w1 = self.__data/approx
+            w2 = np.transpose(self.__dictionary)/sum(np.transpose(approx[:]))
+
+
+            w1[np.isnan(w1)] = 0
+            w2[np.isnan(w2)] = 0
+
+            wh = np.dot(w2, w1)
+            wt[:] = sum(np.transpose(w2[:]))
+            wt = np.transpose(wt)
+
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+
+            self.__activation = self.__activation * bias
+            counter += 1
+
+        return self.__dictionary,self.__activation
+
+
+    def separate_euc_without_template(self,iter=200):
+        """
+        テンプレートなしのEUC仕様の分離処理を行う
+        :param iter:
+        :return:
+        """
+        counter = 0
+
+        while counter < iter:
+            approx = np.dot(self.__dictionary , self.__activation)
+
+            wh = np.dot(np.transpose(self.__dictionary) , self.__data)
+            wt = np.dot(np.transpose(self.__dictionary) , approx)
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+
+            self.__activation = self.__activation * bias
+
+            approx = np.dot(self.__dictionary,self.__activation)
+            wh = np.dot(self.__data,np.transpose(self.__activation))
+            wt = np.dot(approx,np.transpose(self.__activation))
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+            self.__dictionary = self.__dictionary * bias
+            counter += 1
+
+        return self.__dictionary,self.__activation
+
+
+    def separate_kl_without_template(self,iter=200):
+        """
+        テンプレートなしのKL仕様の分離処理を行う
+        :param iter:
+        :return:
+        """
+        counter = 0
+        while counter < iter:
+            approx = np.dot(self.__dictionary , self.__activation)
+
+            w = self.__data/approx
+            w[np.isnan(w)] = 0
+            wh = np.dot(np.transpose(self.__dictionary),w)
+
+            wt = np.ones([1, self.__k], np.float32)
+            wt[:] = sum(self.__dictionary[:,:])
+            wt = np.transpose(wt)
+
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+
+            self.__activation = self.__activation * bias
+
+
+            approx = np.dot(self.__dictionary,self.__activation)
+            w = self.__data/approx
+            w[np.isnan(w)] = 0
+            wh = np.dot(w,np.transpose(self.__activation))
+
+            wt = np.ones([self.__k,1],np.float32)
+            wt = sum(np.transpose(self.__activation[:]))
+            wt = np.transpose(wt)
+
+            bias = wh/wt
+            self.__dictionary = self.__dictionary *bias
+            counter += 1
+        return self.__dictionary,self.__activation
+
+
+    def separate_is_without_template(self,iter=200):
+        """
+        テンプレートなしのIS仕様の分離処理を行う
+        :param iter:
+        :return:
+        """
+        counter = 0
+
+        while counter < iter:
+            approx = np.dot(self.__dictionary , self.__activation)
+            wt = np.ones([1, self.__k], np.float32)
+
+            w1 = self.__data/approx
+            w2 = np.transpose(self.__dictionary)/sum(np.transpose(approx[:]))
+            w1[np.isnan(w1)] = 0
+            w2[np.isnan(w2)] = 0
+
+            wh = np.dot(w2, w1)
+            wt[:] = sum(np.transpose(w2[:]))
+            wt = np.transpose(wt)
+
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+
+            self.__activation = self.__activation * bias
+
+            approx = np.dot(self.__dictionary , self.__activation)
+            w1 = self.__data/approx
+            w2 = self.__activation/sum(approx[:])
+            w1[np.isnan(w1)] = 0
+            w2[np.isnan(w2)] = 0
+
+            wh = np.dot(w1,np.transpose(w2))
+            wt = sum(np.transpose(w2[:]))
+
+            bias = wh/wt
+            bias[np.isnan(bias)] = 0
+            self.__dictionary = self.__dictionary * bias
+
+
+
+            counter += 1
+
+        return self.__dictionary,self.__activation
