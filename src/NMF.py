@@ -233,7 +233,7 @@ class NMF():
             bias = wh/wt
             bias[np.isnan(bias)] = 0
 
-            self.__activation = self.__activation * bias
+            self.__activation = self.__activation * np.sqrt(bias)
 
             approx = np.dot(self.__dictionary , self.__activation)
             w1 = self.__data/approx
