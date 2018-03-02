@@ -17,5 +17,5 @@ srcフォルダ内の「main.py」に使い方を記載．
 numpy
 
 
-## Licence
+## License
 Copyright © 2016 T_Sumida Distributed under the MIT License.
