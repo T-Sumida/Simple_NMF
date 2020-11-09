@@ -1,10 +1,7 @@
-#coding:utf-8
+# -*- coding: utf-8 -*-
 
 import numpy as np
 
-"""
-面倒くさいけれど、この２つをimportしないといけない
-"""
 from NMF import NMF
 
 
@@ -14,30 +11,32 @@ from NMF import NMF
 """
 if __name__ == "__main__":
 
-    """
-    基本的にはコンストラクタで面倒なk,row,columnを渡さなくてもOK
-    適当に作っただけなので・・・
-    """
     nmf = NMF()
 
     """
-    コンストラクタを作ったあとには、まずこれを呼んでください！
-    ここで、k,row,columnの設定をするので、これを呼ばないとsetDictionaryが動かなくなります！
+    コンストラクタを作ったあとには、まずこれを呼ぶこと
+    ここで、k,row,columnの設定をするので、これを呼ばないとsetDictionaryが動かない
     """
-    nmf.setAnalyzData([[1,2,3,4],[2,3,4,5]],k=3)
+    nmf.setAnalyzData(
+        [
+            [1, 2, 3, 4],
+            [2, 3, 4, 5]
+        ],
+        k=3
+    )
 
     """
     ここでテンプレートをセットする
     """
-    nmf.setDictionary(0,[0.0,2.0])
-    nmf.setDictionary(1,[1.0,6.0])
-    nmf.setDictionary(2,[11.0,10.0])
+    nmf.setDictionary(0, [0.0, 2.0])
+    nmf.setDictionary(1, [1.0, 6.0])
+    nmf.setDictionary(2, [11.0, 10.0])
 
     """
     NMF開始
     引数には、アルゴリズムと反復更新回数を渡しておく
     """
-    dic,act = nmf.separate_euc_with_template(iter=200)
+    dic, act = nmf.separate_euc_with_template(iter=200)
     # dic,act = nmf.separate_kl_with_template(iter=200)
     # dic,act = nmf.separate_is_with_template(iter=200)
 
@@ -47,13 +46,13 @@ if __name__ == "__main__":
     """
     結果表示
     """
-    print "=========================== Dictionary ==========================="
-    print dic
-    print "=========================== Activation ==========================="
-    print act
+    print("=========================== Dictionary ===========================")
+    print(dic)
+    print("=========================== Activation ===========================")
+    print(act)
 
     """
     ちゃんと分解できているかの確認
     """
-    print "=========================== Approx ==========================="
-    print np.dot(dic,act)
+    print("=========================== Approx ===========================")
+    print(np.dot(dic, act))
